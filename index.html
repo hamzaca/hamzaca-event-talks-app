@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Talks Today</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #search-box {
+            padding: 12px;
+            width: 50%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .schedule-item {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+            transition: all 0.3s ease-in-out;
+        }
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+        .time {
+            flex: 0 0 120px;
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.1em;
+        }
+        .details {
+            flex: 1;
+        }
+        .details h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.4em;
+            color: #2c3e50;
+        }
+        .speakers {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .categories {
+            margin-bottom: 10px;
+        }
+        .category {
+            display: inline-block;
+            background-color: #e7f3ff;
+            color: #3498db;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+        .description {
+            color: #666;
+        }
+        .break {
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Tech Talks Today</h1>
+        <h2>A One-Day Virtual Conference</h2>
+
+        <div class="search-container">
+            <input type="text" id="search-box" placeholder="Search by category (e.g., AI, Web, Cloud)...">
+        </div>
+
+        <div id="schedule">
+            <!-- Schedule will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const talks = [
+                {
+                    title: "The Future of Artificial Intelligence",
+                    speakers: ["Dr. Evelyn Reed"],
+                    categories: ["AI", "Machine Learning", "Future Tech"],
+                    description: "A deep dive into the next generation of AI and its potential impact on society and technology. We'll explore new architectures and ethical considerations."
+                },
+                {
+                    title: "Modern Web Development with Serverless",
+                    speakers: ["Johnathan Carter", "Maria Rodriguez"],
+                    categories: ["Web", "Serverless", "JavaScript"],
+                    description: "Learn how to build scalable, cost-effective web applications using serverless architectures. This talk covers the latest tools and best practices."
+                },
+                {
+                    title: "Cybersecurity in a Post-Quantum World",
+                    speakers: ["Kenji Tanaka"],
+                    categories: ["Security", "Cryptography", "Quantum"],
+                    description: "An overview of the threats quantum computing poses to current encryption standards and the race to develop quantum-resistant cryptography."
+                },
+                {
+                    title: "Cloud-Native Strategies for Enterprise",
+                    speakers: ["Fatima Al-Jamil"],
+                    categories: ["Cloud", "DevOps", "Architecture"],
+                    description: "Discover effective strategies for migrating legacy systems to a cloud-native environment. We'll discuss containerization, microservices, and CI/CD pipelines."
+                },
+                {
+                    title: "The Art of Data Visualization",
+                    speakers: ["David Lee", "Susan Chen"],
+                    categories: ["Data Science", "UI/UX", "Web"],
+                    description: "This talk explores the principles of effective data visualization and how to create compelling narratives with data using modern libraries and tools."
+                },
+                {
+                    title: "Building Real-Time Applications with WebSockets",
+                    speakers: ["Olivia Williams"],
+                    categories: ["Web", "Real-Time", "JavaScript"],
+                    description: "A practical guide to using WebSockets for building interactive, real-time features like live charts, notifications, and collaborative tools."
+                }
+            ];
+
+            const scheduleContainer = document.getElementById('schedule');
+            const searchBox = document.getElementById('search-box');
+            let scheduleItems = [];
+
+            function generateSchedule() {
+                const startTime = new Date();
+                startTime.setHours(10, 0, 0, 0); // 10:00 AM
+
+                let currentTime = new Date(startTime);
+
+                talks.forEach((talk, index) => {
+                    // Talk slot
+                    const talkStartTime = new Date(currentTime);
+                    const talkEndTime = new Date(talkStartTime.getTime() + 60 * 60 * 1000);
+                    scheduleItems.push({ talk, startTime: talkStartTime, endTime: talkEndTime, type: 'talk' });
+
+                    // Update time for the next slot
+                    currentTime = new Date(talkEndTime);
+
+                    // Lunch break after the 3rd talk
+                    if (index === 2) {
+                        const lunchStartTime = new Date(currentTime);
+                        const lunchEndTime = new Date(lunchStartTime.getTime() + 60 * 60 * 1000);
+                        scheduleItems.push({ title: 'Lunch Break', startTime: lunchStartTime, endTime: lunchEndTime, type: 'break' });
+                        currentTime = new Date(lunchEndTime);
+                    } 
+                    // 10-minute break after other talks (but not the last one)
+                    else if (index < talks.length - 1) {
+                        const breakStartTime = new Date(currentTime);
+                        const breakEndTime = new Date(breakStartTime.getTime() + 10 * 60 * 1000);
+                        scheduleItems.push({ title: 'Break', startTime: breakStartTime, endTime: breakEndTime, type: 'break' });
+                        currentTime = new Date(breakEndTime);
+                    }
+                });
+
+                renderSchedule(scheduleItems);
+            }
+            
+            function formatTime(date) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+            }
+
+            function renderSchedule(items) {
+                scheduleContainer.innerHTML = '';
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('schedule-item');
+                    
+                    if (item.type === 'talk') {
+                        itemDiv.dataset.categories = item.talk.categories.join(',').toLowerCase();
+                        itemDiv.innerHTML = `
+                            <div class="time">${formatTime(item.startTime)} - ${formatTime(item.endTime)}</div>
+                            <div class="details">
+                                <h3>${item.talk.title}</h3>
+                                <div class="speakers">By: ${item.talk.speakers.join(', ')}</div>
+                                <div class="categories">
+                                    ${item.talk.categories.map(cat => `<span class="category">${cat}</span>`).join('')}
+                                </div>
+                                <div class="description">${item.talk.description}</div>
+                            </div>
+                        `;
+                    } else {
+                        itemDiv.classList.add('break');
+                        itemDiv.innerHTML = `
+                            <div class="time">${formatTime(item.startTime)} - ${formatTime(item.endTime)}</div>
+                            <div class="details">${item.title}</div>
+                        `;
+                    }
+                    scheduleContainer.appendChild(itemDiv);
+                });
+            }
+
+            function filterTalks() {
+                const query = searchBox.value.toLowerCase().trim();
+                const allItems = scheduleContainer.querySelectorAll('.schedule-item');
+
+                allItems.forEach(item => {
+                    // Always show breaks
+                    if (item.classList.contains('break')) {
+                        item.style.display = 'flex';
+                        return;
+                    }
+                    
+                    const categories = item.dataset.categories || '';
+                    if (categories.includes(query)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            searchBox.addEventListener('keyup', filterTalks);
+
+            generateSchedule();
+        });
+    </script>
+
+</body>
+</html>
